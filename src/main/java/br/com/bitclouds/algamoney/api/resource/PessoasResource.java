@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +44,16 @@ public class PessoasResource {
 		response.setHeader("Location", uri.toASCIIString());
 		
 		return ResponseEntity.created(uri).body(pessoa);
+	}
+	
+	@GetMapping("/{codigo}")
+	public ResponseEntity<Pessoa> buscarPeloCodigo(@PathVariable Long codigo){
+		Pessoa pessoa = pessoasRepository.findOne(codigo);
+		if(null==pessoa){
+			return(ResponseEntity.notFound().build());
+		}else{
+			return(ResponseEntity.ok(pessoa));
+		}
 	}
 
 }
