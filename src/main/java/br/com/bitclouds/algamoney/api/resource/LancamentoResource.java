@@ -17,40 +17,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.bitclouds.algamoney.api.event.RecursoCriadoEvent;
-import br.com.bitclouds.algamoney.api.model.Categoria;
-import br.com.bitclouds.algamoney.api.repository.CategoriaRepository;
+import br.com.bitclouds.algamoney.api.model.Lancamento;
+import br.com.bitclouds.algamoney.api.repository.LancamentoRepository;
 
 @RestController
-@RequestMapping("/categorias")
-public class CategoriaResource {
-
+@RequestMapping("/lancamentos")
+public class LancamentoResource {
+	
 	@Autowired
-	private CategoriaRepository categoriaRepository;
+	private LancamentoRepository repository;
 	
 	@Autowired
 	private ApplicationEventPublisher publisher;
 	
 	@GetMapping
-	public ResponseEntity<?> buscarCategorias(){
-		List<Categoria> categorias = categoriaRepository.findAll();
-		return ResponseEntity.ok(categorias);
-	}
-	
-	@PostMapping
-	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria entity, HttpServletResponse response){
-		Categoria categoria = categoriaRepository.save(entity);
-		publisher.publishEvent(new RecursoCriadoEvent(categoria, response, categoria.getCodigo()));
-		return ResponseEntity.status(HttpStatus.CREATED).body(categoria);
+	public ResponseEntity<?> buscarLancamentos(){
+		List<Lancamento> lancamentos = repository.findAll(); 
+		return ResponseEntity.ok(lancamentos);
 	}
 	
 	@GetMapping("/{codigo}")
-	public ResponseEntity<Categoria> buscarPeloCodigo(@PathVariable Long codigo){
-		Categoria categoria = categoriaRepository.findOne(codigo);
-		if(null==categoria){
+	public ResponseEntity<Lancamento> buscarPeloCodigo(@PathVariable Long codigo){
+		Lancamento lancamento = repository.findOne(codigo);
+		if(null==lancamento){
 			return(ResponseEntity.notFound().build());
 		}else{
-			return(ResponseEntity.ok(categoria));
+			return(ResponseEntity.ok(lancamento));
 		}
+	}
+	
+	@PostMapping
+	public ResponseEntity<Lancamento> criar(@RequestBody @Valid Lancamento entity, HttpServletResponse response){
+		Lancamento lancamento = repository.save(entity);
+		publisher.publishEvent(new RecursoCriadoEvent(lancamento, response, lancamento.getCodigo()));
+		return ResponseEntity.status(HttpStatus.CREATED).body(lancamento);
 	}
 
 }
